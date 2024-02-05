@@ -29,7 +29,8 @@ def number_four_index():
              '</head>'
              '<body>'
              '<h1><i>Жди нас, Марс!</i></h1>') + f'<img src="{url_for('static', filename='img/Mars.png')}"'
-                                                 f' alt="not found"></body></html>')
+                                                 f' alt="not found"><p>Вот она какая, '
+                                                 f'красная планета</p></body></html>')
 
 
 @app.route('/promotion_image')
