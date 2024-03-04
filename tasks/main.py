@@ -1,56 +1,24 @@
-from flask_restful import reqparse, abort, Api, Resource
-from flask import abort, jsonify
-from data import db_session
-from data.users import User
-from data.reqparse_user import parser
+from requests import get, post, delete
 
+print(get('http://localhost:5000/api/users').json())
+print(get('http://localhost:5000/api/users/1').json())
 
-class UsersResource(Resource):
-    def get(self, user_id):
-        abort_if_users_not_found(user_id)
-        session = db_session.create_session()
-        users = session.query(User).get(user_id)
-        return jsonify({'users': users.to_dict(
-            only=('surname', 'name', 'age', 'position', 'speciality', 'address', 'email', 'hashed_password'))})
+print(post('http://localhost:5000/api/users', json={}).json())
 
-    def delete(self, user_id):
-        abort_if_users_not_found(user_id)
-        session = db_session.create_session()
-        users = session.query(User).get(user_id)
-        session.delete(users)
-        session.commit()
-        return jsonify({'success': 'OK'})
+print(post('http://localhost:5000/api/users',
+           json={'name': 'Юлия'}).json())
 
+print(post('http://localhost:5000/api/users',
+           json={'surname': 'Фамилия',
+                 'name': 'Имя',
+                 'age': 10,
+                 'position': "позитион",
+                 'speciality': "специалити",
+                 'address': "РК, г. Элиста, 2-мкр, д.10",
+                 'email': "school17@mail.ru",
+                 'hashed_password': "A2udh7y381h!"}).json())
 
-class UsersListResource(Resource):
-    def get(self):
-        session = db_session.create_session()
-        users = session.query(User).all()
-        return jsonify({'users': [item.to_dict(
-            only=('surname', 'name', 'age', 'position', 'speciality', 'address', 'email', 'hashed_password'))
-            for item in users]})
+print(delete('http://localhost:5000/api/users/999').json())
+# user с id = 999 нет в базе
 
-    def post(self):
-        args = parser.parse_args()
-        session = db_session.create_session()
-        user = User(
-            surname=args['surname'],
-            name=args['name'],
-            age=args['age'],
-            position=args['position'],
-            speciality=args['speciality'],
-            address=args['address'],
-            email=args['email'],
-            hashed_password=args['hashed_password'],
-        )
-        session.add(user)
-        session.commit()
-        return jsonify({'id': user.id})
-
-
-def abort_if_users_not_found(user_id):
-    session = db_session.create_session()
-    user = session.query(User).get(user_id)
-    if not user:
-        abort(404, message=f"User {user_id} not found")
-
+print(delete('http://localhost:5000/api/users/1').json())
